@@ -1,0 +1,5 @@
+# Specify the path where your clone of the RedditVideoMakerBot repository is
+# Examples: 
+## On Windows it would be REDDIT_VIDEO_MAKER_BOT_DIR="C:\Users\User\Programs\RedditVideoMakerBot
+## On Linux Distributions REDDIT_VIDEO_MAKER_BOT_DIR="/home/User/Programs/RedditVideoMakerBot"
+REDDIT_VIDEO_MAKER_BOT_DIR="PATH GOES HERE"
