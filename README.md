@@ -21,10 +21,10 @@ These are also listed in requirements.txt and can be installed with `pip install
 2. Follow the installation guide for the RedditVideoMakerBot
 3. Test the RedditVideoMakerBot to make sure it works
 4. Rename `.envTEMPLATE` to `.env` and specify the path to your clone of RedditVideoMakerBot within
-5.	-  Create a project in the Google Cloud using the YouTube Data API v3
-	-  Rename `client_secretsTEMPLATE.json` to `client_secrets.json` and configure the empty fields with the information from your Google Cloud project
+5.	-  Create a project in the Google Cloud using the YouTube Data API v3 [^1]
+	-  Rename `client_secretsTEMPLATE.json` to `client_secrets.json` and configure the marked fields with the information from your Google Cloud project
 6. Run the program, on first usage, you will be asked to authorize the project by Google for a Google (YouTube) account
 
-The individual steps for 5. haven't been explained in detail as that would be quite complicated in text form.
-For a good explanation of the individual steps I recommend [this](https://www.youtube.com/watch?v=aFwZgth790Q) video. 
-You can ignore the parts where he sets up the script as that is already implemented by this program, all that is relevant is creating the Cloud project and configuring `client_secrets.json`.
+[^1]: The individual steps for 5. haven't been explained in detail as that would be complicated to follow.
+For a good explanation of the individual steps I recommend [this](https://www.youtube.com/watch?v=aFwZgth790Q) video from 4:17 to 11:05. 
+Once you have your client ID and client secret, you can configure your `client_secrets.json` like in the next substep.
