@@ -15,6 +15,13 @@ Furthermore needed are following packages:
 
 These are also listed in requirements.txt and can be installed with `pip install -r requirements.txt`
 
+# Usage
+
+Navigate to your clone of the repository and in the command line execute
+```
+$ python main.py
+```
+
 # Setup
 
 1. Clone the RedditVideoMakerBot [repository](https://github.com/elebumm/RedditVideoMakerBot)
