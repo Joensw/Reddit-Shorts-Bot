@@ -50,17 +50,17 @@ def main():
                            default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
     args = argparser.parse_args()
 
-    # Make a new video
+    # verify before attempting to upload
+    verify(args)
 
+    # Make a new video
     create_video()
 
     # Find the latest created video
-
     results_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'results')
     to_upload = find_latest(results_path)
 
     # Upload it
-
     args.file = to_upload
     upload(args)
 
