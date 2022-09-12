@@ -36,6 +36,10 @@ def upload(args):
         print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
 
 
+def verify(args):
+    get_authenticated_service(args)
+
+
 def main():
     argparser.add_argument("--file", help="This parameter doesnt do anything")
     argparser.add_argument("--title", help="Video title", default="#shorts #askreddit")
