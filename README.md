@@ -32,6 +32,8 @@ $ python main.py
 	-  Rename `client_secretsTEMPLATE.json` to `client_secrets.json` and configure the marked fields with the information from your Google Cloud project
 6. Run the program, on first usage, you will be asked to authorize the project by Google for a Google (YouTube) account
 
+*sidenote: the o-auth token created in step 6 of will expire every so often, meaning when this happens you will be prompted to reauthorize your google account*
+
 [^1]: The individual steps for 5. haven't been explained in detail as that would be complicated to follow.
 For a good explanation of the individual steps I recommend [this](https://www.youtube.com/watch?v=aFwZgth790Q) video from 4:17 to 11:05. 
 Once you have your client ID and client secret, you can configure your `client_secrets.json` like in the next substep.
