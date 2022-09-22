@@ -42,7 +42,7 @@ def verify(args):
 
 def main():
     argparser.add_argument("--file", help="This parameter doesnt do anything")
-    argparser.add_argument("--title", help="Video title", default="#shorts #askreddit")
+    argparser.add_argument("title", nargs='?', help="Video title", default="#shorts")
     argparser.add_argument("--description", help="Video description",
                            default="")
     argparser.add_argument("--category", default="22",
@@ -52,13 +52,16 @@ def main():
                            default="")
     argparser.add_argument("--privacyStatus", choices=VALID_PRIVACY_STATUSES,
                            default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
+    argparser.add_argument("--retry", help="Skip video creation and attempt to upload latest video",
+                           action="store_true")
     args = argparser.parse_args()
 
     # verify before attempting to upload
     verify(args)
 
     # Make a new video
-    create_video()
+    if not args.retry:
+        create_video()
 
     # Find the latest created video
     results_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'results')
