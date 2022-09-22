@@ -17,10 +17,21 @@ These are also listed in requirements.txt and can be installed with `pip install
 
 # Usage
 
-Navigate to your clone of the repository and in the command line execute
+Navigate to your clone of the repository and in the command line execute :
 ```
 $ python main.py
 ```
+If you want to specify a title other than the standard one which is "#shorts" you can specify it like this:
+```
+$ python main.py "title"
+```
+Make sure to use quotation marks ("This is a title") if you want to include spaces in your title
+
+Occasionally after successful the video creation the upload / verification process will fail, in this case you can re-call the program like this:
+```
+$ python main.py --retry
+```
+to attempt to upload the latest video again, this will avoid having to go through the slow video creation again
 
 # Setup
 
@@ -37,3 +48,7 @@ $ python main.py
 [^1]: The individual steps for 5. haven't been explained in detail as that would be complicated to follow.
 For a good explanation of the individual steps I recommend [this](https://www.youtube.com/watch?v=aFwZgth790Q) video from 4:17 to 11:05. 
 Once you have your client ID and client secret, you can configure your `client_secrets.json` like in the next substep.
+
+# Note
+
+The upload happens through the YouTube Data API v3, after setting your account up in the google cloud you have an API quota of 10,000 / Day. Uploading a video costs 1600 points, so in a day you can upload a maximum of 6 videos.
