@@ -6,12 +6,32 @@ from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 from pathlib import Path
 
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+
 load_dotenv()
 
 REDDIT_VIDEO_MAKER_BOT_DIR = os.getenv('REDDIT_VIDEO_MAKER_BOT_DIR')
 
 
-def create_video():
+def get_run_times():
+    config_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'config.toml')
+    with open(config_path, mode="rb") as fp:
+        config = tomllib.load(fp)
+
+    times_to_run = 1
+
+    try:
+        times_to_run = config["settings"]["times_to_run"]
+    except KeyError:
+        print(f"times_to_run not found, using default value: {times_to_run}")
+
+    return times_to_run
+
+
+def create_videos():
     cmd = Path('python ' + REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'main.py')
 
     original_dir = os.getcwd()
@@ -20,10 +40,10 @@ def create_video():
     os.chdir(original_dir)
 
 
-def find_latest(path):
+def find_latest_list(path, length: int = 1):
     list_of_paths = path.glob('**/*.mp4')
-    latest_video = Path(max(list_of_paths, key=lambda x: x.stat().st_ctime))
-    return latest_video
+    latest_videos = sorted(list_of_paths, key=lambda x: x.stat().st_ctime, reverse=True)[:length]
+    return [Path(x) for x in latest_videos]
 
 
 def upload(args):
@@ -56,20 +76,23 @@ def main():
                            action="store_true")
     args = argparser.parse_args()
 
-    # verify before attempting to upload
+    # verify before attempting to upload to discover missing / expired o-auth key early
     verify(args)
 
-    # Make a new video
-    if not args.retry:
-        create_video()
-
-    # Find the latest created video
+    times_to_run = get_run_times()
     results_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'results')
-    to_upload = find_latest(results_path)
 
-    # Upload it
-    args.file = to_upload
-    upload(args)
+    if args.retry:
+        to_upload = find_latest_list(results_path)[0]
+        args.file = to_upload
+        upload(args)
+        return
+
+    create_videos()  # Will create as many videos as is specified in the RVMB config.toml
+    for x in range(times_to_run):
+        to_upload = find_latest_list(results_path, times_to_run)[x]
+        args.file = to_upload
+        upload(args)
 
 
 if __name__ == '__main__':
