@@ -1,5 +1,5 @@
 # Reddit-Shorts-Bot
-Very simple program to upload auto generated videos from Reddit threads to YouTube via the YouTube Data API v3
+A program to upload auto generated videos from Reddit threads to YouTube via the YouTube Data API v3
 
 This is an improved version of a prior project where I had slightly modified the RedditVideoMakerBot to enable automatic uploading. The major improvement is that no alterations have to be made to the source code of the RedditVideoMakerBot, so this program can still be used even as that repository is updated further, provided the current directory structure is kept.
 
@@ -12,6 +12,7 @@ Furthermore needed are following packages:
  - google-api-python-client
  - httplib2
  - python-dotenv
+ - tomli
 
 These are also listed in requirements.txt and can be installed with `pip install -r requirements.txt`
 
@@ -42,8 +43,6 @@ If you want to specify a title other than the standard one which is "#shorts" yo
 $ python main.py "title"
 ```
 Make sure to use quotation marks ("This is a title") if you want to include spaces in your title
-
-**Note**: Calling the program will create as many videos as is specified in the config of the RedditVideoMakerBot. However, it will only upload the most recently created video. To avoid unnecessary video creation make sure the RedditVideoMakerBot only creates 1 video per call (you can change this by setting times_to_run in the config.toml file of the RedditVideoMakerBot directory).
 
 Occasionally after successful video creation the upload / verification process will fail, in this case you can re-call the program like this:
 ```
