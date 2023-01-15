@@ -12,7 +12,6 @@ except ModuleNotFoundError:
     import tomli as tomllib
 
 load_dotenv()
-
 REDDIT_VIDEO_MAKER_BOT_DIR = os.getenv('REDDIT_VIDEO_MAKER_BOT_DIR')
 
 
@@ -36,11 +35,12 @@ def create_videos():
 
     original_dir = os.getcwd()
     os.chdir(REDDIT_VIDEO_MAKER_BOT_DIR)
-    subprocess.call(cmd.as_posix())
+    proc = subprocess.run(cmd.as_posix())
+    proc.check_returncode()
     os.chdir(original_dir)
 
 
-def find_latest_list(path, length: int = 1):
+def get_list_of_newest_files(path, length: int = 1):
     list_of_paths = path.glob('**/*.mp4')
     latest_videos = sorted(list_of_paths, key=lambda x: x.stat().st_ctime, reverse=True)[:length]
     return [Path(x) for x in latest_videos]
@@ -83,14 +83,20 @@ def main():
     results_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'results')
 
     if args.retry:
-        to_upload = find_latest_list(results_path)[0]
+        to_upload = get_list_of_newest_files(results_path)[0]
         args.file = to_upload
         upload(args)
         return
 
-    create_videos()  # Will create as many videos as is specified in the RVMB config.toml
+    try:
+        create_videos()
+    except subprocess.CalledProcessError:
+        print("Video Creation Process failed!")
+        return
+
+    # Will create as many videos as is specified in the RVMB config.toml
     for x in range(times_to_run):
-        to_upload = find_latest_list(results_path, times_to_run)[x]
+        to_upload = get_list_of_newest_files(results_path, times_to_run)[x]
         args.file = to_upload
         upload(args)
 
