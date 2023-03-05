@@ -1,6 +1,7 @@
 import os
 import subprocess
-from uploader import VALID_PRIVACY_STATUSES, get_authenticated_service, initialize_upload
+import argument_parser
+from uploader import get_authenticated_service, initialize_upload
 from oauth2client.tools import argparser
 from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
@@ -12,11 +13,12 @@ except ModuleNotFoundError:
     import tomli as tomllib
 
 load_dotenv()
-REDDIT_VIDEO_MAKER_BOT_DIR = os.getenv('REDDIT_VIDEO_MAKER_BOT_DIR')
+RVBM_DIR = os.getenv('REDDIT_VIDEO_MAKER_BOT_DIR')
+RVBM_RESULTS_DIR_NAME = "results"
 
 
 def get_run_times():
-    config_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'config.toml')
+    config_path = Path(RVBM_DIR + '/' + 'config.toml')
     with open(config_path, mode="rb") as fp:
         config = tomllib.load(fp)
 
@@ -31,10 +33,10 @@ def get_run_times():
 
 
 def create_videos():
-    cmd = Path('python ' + REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'main.py')
+    cmd = Path('python ' + RVBM_DIR + '/' + 'main.py')
 
     original_dir = os.getcwd()
-    os.chdir(REDDIT_VIDEO_MAKER_BOT_DIR)
+    os.chdir(RVBM_DIR)
     proc = subprocess.run(cmd.as_posix())
     proc.check_returncode()
     os.chdir(original_dir)
@@ -46,7 +48,17 @@ def get_list_of_newest_files(path, length: int = 1):
     return [Path(x) for x in latest_videos]
 
 
-def upload(args):
+def set_video_options(args, file_path):
+    if args.title is None:
+        full_title = "r/" + file_path.parent.stem + ":" + " " + file_path.stem
+        truncated_title = (full_title[:97] + '..') if len(full_title) > 100 else full_title
+        args.title = truncated_title
+    return args
+
+
+def upload_from_path(args, file_path):
+    args = set_video_options(args, file_path)
+    args.file = file_path
     if not args.file.exists():
         exit("Couldn't find video to upload!")
     youtube = get_authenticated_service(args)
@@ -56,36 +68,16 @@ def upload(args):
         print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
 
 
-def verify(args):
-    get_authenticated_service(args)
-
-
 def main():
-    argparser.add_argument("--file", help="This parameter doesnt do anything")
-    argparser.add_argument("title", nargs='?', help="Video title", default="#shorts")
-    argparser.add_argument("--description", help="Video description",
-                           default="")
-    argparser.add_argument("--category", default="22",
-                           help="Numeric video category. " +
-                                "See https://developers.google.com/youtube/v3/docs/videoCategories/list")
-    argparser.add_argument("--keywords", help="Video keywords, comma separated",
-                           default="")
-    argparser.add_argument("--privacyStatus", choices=VALID_PRIVACY_STATUSES,
-                           default=VALID_PRIVACY_STATUSES[0], help="Video privacy status.")
-    argparser.add_argument("--retry", help="Skip video creation and attempt to upload latest video",
-                           action="store_true")
-    args = argparser.parse_args()
+    args = argument_parser.parse_args()
 
     # verify before attempting to upload to discover missing / expired o-auth key early
-    verify(args)
 
     times_to_run = get_run_times()
-    results_path = Path(REDDIT_VIDEO_MAKER_BOT_DIR + '/' + 'results')
+    results_path = Path(RVBM_DIR + '/' + RVBM_RESULTS_DIR_NAME)
 
     if args.retry:
-        to_upload = get_list_of_newest_files(results_path)[0]
-        args.file = to_upload
-        upload(args)
+        upload_from_path(args, get_list_of_newest_files(results_path)[0])
         return
 
     try:
@@ -94,11 +86,9 @@ def main():
         print("Video Creation Process failed!")
         return
 
-    # Will create as many videos as is specified in the RVMB config.toml
     for x in range(times_to_run):
-        to_upload = get_list_of_newest_files(results_path, times_to_run)[x]
-        args.file = to_upload
-        upload(args)
+        file_path = get_list_of_newest_files(results_path, times_to_run)[x]
+        upload_from_path(args, file_path)
 
 
 if __name__ == '__main__':
