@@ -2,7 +2,6 @@ import os
 import subprocess
 import argument_parser
 from uploader import get_authenticated_service, initialize_upload
-from oauth2client.tools import argparser
 from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 from pathlib import Path
@@ -72,6 +71,7 @@ def main():
     args = argument_parser.parse_args()
 
     # verify before attempting to upload to discover missing / expired o-auth key early
+    get_authenticated_service(args)
 
     times_to_run = get_run_times()
     results_path = Path(RVBM_DIR + '/' + RVBM_RESULTS_DIR_NAME)
