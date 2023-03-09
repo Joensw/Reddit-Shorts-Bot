@@ -38,7 +38,7 @@ Navigate to your clone of the repository and in the command line execute :
 ```
 $ python main.py
 ```
-If you want to specify a title other than the standard one which is "#shorts" you can specify it like this:
+The standard title of the uploaded video will be `r/[SUBREDDIT]: THREAD_TITLE`. For example `r/AskReddit: What profession do you find unhealthy`. If you want to specify a title other than the auto generated one you can specify it like this:
 ```
 $ python main.py "title"
 ```
