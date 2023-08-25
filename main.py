@@ -32,11 +32,11 @@ def get_run_times():
 
 
 def create_videos():
-    cmd = Path('python ' + RVBM_DIR + '/' + 'main.py')
+    main_path = Path(RVBM_DIR + '/' + 'main.py')
 
     original_dir = os.getcwd()
     os.chdir(RVBM_DIR)
-    proc = subprocess.run(cmd.as_posix())
+    proc = subprocess.run(["python", main_path])
     proc.check_returncode()
     os.chdir(original_dir)
 
